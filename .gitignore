@@ -1,28 +1,36 @@
 HELP.md
 
+############################
 # Maven
+############################
 target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .mvn/wrapper/maven-wrapper.jar
 
+############################
 # Spring Tool Suite (STS)
+############################
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
+############################
 # IntelliJ IDEA
+############################
 .idea/
 *.iws
 *.iml
 *.ipr
 out/
 
+############################
 # NetBeans
+############################
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -32,22 +40,48 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+############################
 # VS Code
+############################
 .vscode/
 
-# OS files
+############################
+# Operating System Files
+############################
 .DS_Store
 Thumbs.db
 
+############################
 # Logs
+############################
 *.log
 logs/
 
-# Environment variables
+############################
+# Environment Variables
+############################
 .env
 .env.*
 
-# Temporary files
+############################
+# Spring Boot Local Profiles
+############################
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+############################
+# Certificates / Secrets
+############################
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+
+############################
+# Temporary Files
+############################
 *.tmp
 *.temp
 *.swp
