@@ -1,5 +1,6 @@
 package com.library.librarymanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,5 +39,6 @@ public class Book {
     private Category category;
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     private List<Borrow> borrowHistory = new ArrayList<>();
 }

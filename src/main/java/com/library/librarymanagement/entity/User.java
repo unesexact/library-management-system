@@ -1,5 +1,6 @@
 package com.library.librarymanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.library.librarymanagement.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,5 +35,6 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Borrow> borrows = new ArrayList<>();
 }
