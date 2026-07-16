@@ -2,6 +2,7 @@ package com.library.librarymanagement.controller;
 
 import com.library.librarymanagement.entity.User;
 import com.library.librarymanagement.service.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,15 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
+    }
+
+
+    @GetMapping("/me")
+    public User getCurrentUser(Authentication authentication) {
+
+        String username = authentication.getName();
+
+        return userService.getUserByUsername(username);
     }
 
 

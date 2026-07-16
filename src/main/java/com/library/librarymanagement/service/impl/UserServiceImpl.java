@@ -3,6 +3,7 @@ package com.library.librarymanagement.service.impl;
 import com.library.librarymanagement.entity.User;
 import com.library.librarymanagement.repository.UserRepository;
 import com.library.librarymanagement.service.UserService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -57,5 +61,11 @@ public class UserServiceImpl implements UserService {
         User user = getUserById(id);
 
         userRepository.delete(user);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
