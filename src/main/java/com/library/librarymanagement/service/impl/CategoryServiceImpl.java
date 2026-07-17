@@ -16,28 +16,23 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-
     @Override
     public Category createCategory(Category category) {
         return categoryRepository.save(category);
     }
-
 
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
     }
 
-
     @Override
     public Category updateCategory(Long id, Category category) {
-
         Category existingCategory = getCategoryById(id);
 
         existingCategory.setName(category.getName());
@@ -46,12 +41,9 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(existingCategory);
     }
 
-
     @Override
     public void deleteCategory(Long id) {
-
         Category category = getCategoryById(id);
-
         categoryRepository.delete(category);
     }
 }

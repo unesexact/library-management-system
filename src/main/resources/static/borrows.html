@@ -2,199 +2,89 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <title>Borrows</title>
 
-
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-            rel="stylesheet">
-
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-
 </head>
-
 
 <body>
 
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-
     <div class="container">
-
-
-        <a class="navbar-brand" href="index.html">
-            📚 Library System
-        </a>
-
+        <a class="navbar-brand" href="index.html">📚 Library System</a>
 
         <div>
-
             <ul class="navbar-nav">
-
-
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">
-                        Home
-                    </a>
+                    <a class="nav-link" href="index.html">Home</a>
                 </li>
 
-
                 <li class="nav-item">
-                    <a class="nav-link" href="books.html">
-                        Books
-                    </a>
+                    <a class="nav-link" href="books.html">Books</a>
                 </li>
-
 
                 <li class="nav-item admin-link">
-
-                    <a class="nav-link" href="categories.html">
-                        Categories
-                    </a>
-
+                    <a class="nav-link" href="categories.html">Categories</a>
                 </li>
-
 
                 <li class="nav-item admin-link">
-
-                    <a class="nav-link" href="users.html">
-                        Users
-                    </a>
-
+                    <a class="nav-link" href="users.html">Users</a>
                 </li>
 
-
                 <li class="nav-item">
-                    <a class="nav-link active" href="borrows.html">
-                        Borrows
-                    </a>
+                    <a class="nav-link active" href="borrows.html">Borrows</a>
                 </li>
 
                 <li class="nav-item">
                     <form action="/logout" method="post">
-                        <button class="btn btn-link nav-link">
-                            Logout
-                        </button>
+                        <button class="btn btn-link nav-link">Logout</button>
                     </form>
                 </li>
-
-
             </ul>
-
         </div>
-
-
     </div>
-
-
 </nav>
 
-
 <div class="container mt-5">
+    <h1>Borrow Management</h1>
 
-
-    <h1>
-        Borrow Management
-    </h1>
-
-
-    <div class="card mt-4">
-
-
+    <div class="card mt-4 admin-only">
         <div class="card-body">
+            <h3>Borrow Book</h3>
 
+            <label>User</label>
+            <select id="borrowUser" class="form-select mb-3"></select>
 
-            <h3>
-                Borrow Book
-            </h3>
+            <label>Book</label>
+            <select id="borrowBook" class="form-select mb-3"></select>
 
-
-            <label>
-                User
-            </label>
-
-            <select
-                    id="borrowUser"
-                    class="form-select mb-3">
-
-            </select>
-
-
-            <label>
-                Book
-            </label>
-
-            <select
-                    id="borrowBook"
-                    class="form-select mb-3">
-
-            </select>
-
-
-            <button
-                    class="btn btn-primary"
-                    onclick="borrowBook()">
-
-                Borrow Book
-
-            </button>
-
-
+            <button class="btn btn-primary" onclick="borrowBook()">Borrow Book</button>
         </div>
-
     </div>
 
-
     <table class="table table-striped mt-4">
-
-
         <thead>
-
         <tr>
-
             <th>ID</th>
-
             <th>User</th>
-
             <th>Book</th>
-
             <th>Borrow Date</th>
-
             <th>Due Date</th>
-
             <th>Status</th>
-
             <th>Action</th>
-
-
         </tr>
-
         </thead>
 
-
-        <tbody id="borrowTableBody">
-
-
-        </tbody>
-
-
+        <tbody id="borrowTableBody"></tbody>
     </table>
-
-
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-
 <script src="js/borrows.js"></script>
 <script src="js/auth.js"></script>
-</body>
 
+</body>
 
 </html>

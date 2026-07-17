@@ -12,34 +12,27 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-
     public BookServiceImpl(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
-
 
     @Override
     public Book createBook(Book book) {
         return bookRepository.save(book);
     }
 
-
     @Override
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
-
     @Override
     public Book getBookById(Long id) {
-
         return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
     }
 
-
     @Override
     public Book updateBook(Long id, Book book) {
-
         Book existingBook = getBookById(id);
 
         existingBook.setTitle(book.getTitle());
@@ -52,12 +45,9 @@ public class BookServiceImpl implements BookService {
         return bookRepository.save(existingBook);
     }
 
-
     @Override
     public void deleteBook(Long id) {
-
         Book book = getBookById(id);
-
         bookRepository.delete(book);
     }
 }
