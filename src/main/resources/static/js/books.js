@@ -1,7 +1,43 @@
-loadBooks();
-loadCategories();
-
+let currentRole = null;
 let selectedBookId = null;
+
+loadUserRole();
+
+function loadUserRole() {
+
+    fetch("/users/me")
+        .then(response => response.json())
+        .then(user => {
+
+            currentRole = user.role;
+
+            if (currentRole !== "ADMIN") {
+
+                let addBookCard = document.querySelector(".card.mt-4");
+
+                if (addBookCard) {
+                    addBookCard.style.display = "none";
+                }
+
+            }
+
+            loadBooks();
+
+            if (currentRole === "ADMIN") {
+                loadCategories();
+            }
+
+        })
+        .catch(() => {
+
+            showMessage("Cannot load user information!", "danger");
+
+            loadBooks();
+            loadCategories();
+
+        });
+
+}
 
 function loadBooks() {
     fetch("/books")
@@ -29,8 +65,18 @@ function displayBooks(books) {
 <td>${book.category ? book.category.name : "No category"}</td>
 <td>${book.available ? "Available" : "Not available"}</td>
 <td>
+
+${
+            currentRole === "ADMIN"
+                ?
+                `
 <button class="btn btn-warning btn-sm me-2" onclick="editBook(${book.id})">Edit</button>
 <button class="btn btn-danger btn-sm" onclick="deleteBook(${book.id})">Delete</button>
+`
+                :
+                ""
+        }
+
 </td>
 </tr>
 `;
