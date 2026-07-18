@@ -17,4 +17,6 @@ public class DashboardResponse {
 
     private long totalCategories;
 
+    private long myBorrows;
+
 }
