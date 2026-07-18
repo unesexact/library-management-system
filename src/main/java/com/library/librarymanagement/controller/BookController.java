@@ -19,11 +19,13 @@ public class BookController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public Book getBookById(@PathVariable Long id) {
         return bookService.getBookById(id);
     }

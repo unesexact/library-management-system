@@ -106,4 +106,9 @@ public class BorrowServiceImpl implements BorrowService {
         return borrowRepository.save(borrow);
     }
 
+    @Override
+    public List<Borrow> getMyBorrows(String username) {
+        return borrowRepository.findByUserUsername(username);
+    }
+
 }

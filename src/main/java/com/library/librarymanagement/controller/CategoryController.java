@@ -19,6 +19,7 @@ public class CategoryController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
     }

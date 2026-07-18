@@ -32,6 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
         return userService.getUserByUsername(username);

@@ -20,4 +20,6 @@ public interface BorrowService {
 
     Borrow returnBook(Long borrowId);
 
+    List<Borrow> getMyBorrows(String username);
+
 }

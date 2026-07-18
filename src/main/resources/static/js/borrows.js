@@ -7,14 +7,15 @@ fetch("/users/me")
 
         if (currentRole === "ADMIN") {
             loadUsers();
+            loadBooks();
         } else {
+            document.querySelector(".admin-column").style.display = "none";
             let adminBox = document.querySelector(".admin-only");
             if (adminBox) {
                 adminBox.style.display = "none";
             }
         }
 
-        loadBooks();
         loadBorrows();
     })
     .catch(() => {
@@ -61,7 +62,11 @@ function loadBooks() {
 }
 
 function loadBorrows() {
-    fetch("/borrows")
+    let url = currentRole === "ADMIN"
+        ? "/borrows"
+        : "/borrows/my";
+
+    fetch(url)
         .then(response => response.json())
         .then(borrows => {
             let table = document.getElementById("borrowTableBody");
@@ -79,9 +84,13 @@ function loadBorrows() {
                     action += `<button class="btn btn-danger btn-sm" onclick="deleteBorrow(${borrow.id})">Delete</button>`;
                 }
 
+                let userColumn = currentRole === "ADMIN"
+                    ? `<td>${borrow.user.fullName}</td>`
+                    : "";
+
                 table.innerHTML += `<tr>
 <td>${borrow.id}</td>
-<td>${borrow.user.fullName}</td>
+${userColumn}
 <td>${borrow.book.title}</td>
 <td>${borrow.borrowDate}</td>
 <td>${borrow.dueDate}</td>
@@ -96,6 +105,11 @@ function loadBorrows() {
 }
 
 function borrowBook() {
+    if (currentRole !== "ADMIN") {
+        showMessage("Only admins can borrow books!", "warning");
+        return;
+    }
+
     let userId = document.getElementById("borrowUser").value;
     let bookId = document.getElementById("borrowBook").value;
 
@@ -158,7 +172,6 @@ function deleteBorrow(id) {
         })
         .then(() => {
             showMessage("Borrow deleted successfully!", "success");
-            loadBooks();
             loadBorrows();
         })
         .catch(() => {
