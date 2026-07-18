@@ -22,10 +22,7 @@ function loadUserRole() {
             }
 
             loadBooks();
-
-            if (currentRole === "ADMIN") {
-                loadCategories();
-            }
+            loadCategories();
 
         })
         .catch(() => {
@@ -66,16 +63,10 @@ function displayBooks(books) {
 <td>${book.available ? "Available" : "Not available"}</td>
 <td>
 
-${
-            currentRole === "ADMIN"
-                ?
-                `
+${currentRole === "ADMIN" ? `
 <button class="btn btn-warning btn-sm me-2" onclick="editBook(${book.id})">Edit</button>
 <button class="btn btn-danger btn-sm" onclick="deleteBook(${book.id})">Delete</button>
-`
-                :
-                ""
-        }
+` : ""}
 
 </td>
 </tr>
@@ -128,16 +119,25 @@ function loadCategories() {
     fetch("/categories")
         .then(response => response.json())
         .then(categories => {
+
             let bookCategory = document.getElementById("bookCategory");
             let searchCategory = document.getElementById("searchCategory");
 
-            bookCategory.innerHTML = "";
             searchCategory.innerHTML = `<option value="">All Categories</option>`;
 
+            if (bookCategory) {
+                bookCategory.innerHTML = "";
+            }
+
             categories.forEach(category => {
-                bookCategory.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+
+                if (bookCategory) {
+                    bookCategory.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                }
+
                 searchCategory.innerHTML += `<option value="${category.id}">${category.name}</option>`;
             });
+
         })
         .catch(() => {
             showMessage("Cannot load categories!", "danger");
@@ -167,11 +167,9 @@ function addBook() {
     };
 
     fetch("/books", {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(book)
+        }, body: JSON.stringify(book)
     })
         .then(response => {
             if (!response.ok) {
@@ -248,11 +246,9 @@ function updateBook() {
     };
 
     fetch("/books/" + selectedBookId, {
-        method: "PUT",
-        headers: {
+        method: "PUT", headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(book)
+        }, body: JSON.stringify(book)
     })
         .then(response => {
             if (!response.ok) {
