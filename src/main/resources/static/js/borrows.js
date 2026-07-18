@@ -9,7 +9,11 @@ fetch("/users/me")
             loadUsers();
             loadBooks();
         } else {
-            document.querySelector(".admin-column").style.display = "none";
+            let adminColumns = document.querySelectorAll(".admin-column");
+
+            adminColumns.forEach(column => {
+                column.style.display = "none";
+            });
             let adminBox = document.querySelector(".admin-only");
             if (adminBox) {
                 adminBox.style.display = "none";
@@ -172,6 +176,7 @@ function deleteBorrow(id) {
         })
         .then(() => {
             showMessage("Borrow deleted successfully!", "success");
+            loadBooks();
             loadBorrows();
         })
         .catch(() => {
