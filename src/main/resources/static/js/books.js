@@ -44,22 +44,28 @@ function searchBooks() {
     let categoryId = document.getElementById("searchCategory").value;
     let available = document.getElementById("searchAvailable").value;
 
-    let url = "/books/search?";
+    let params = new URLSearchParams();
 
     if (title) {
-        url += "title=" + title + "&";
+        params.append("title", title);
     }
 
     if (author) {
-        url += "author=" + author + "&";
+        params.append("author", author);
     }
 
     if (categoryId) {
-        url += "categoryId=" + categoryId + "&";
+        params.append("categoryId", categoryId);
     }
 
     if (available !== "") {
-        url += "available=" + available;
+        params.append("available", available);
+    }
+
+    let url = "/books/search";
+
+    if (params.toString()) {
+        url += "?" + params.toString();
     }
 
     fetch(url)
@@ -164,6 +170,7 @@ function editBook(id) {
         .then(response => response.json())
         .then(book => {
             selectedBookId = id;
+
             document.getElementById("bookTitle").value = book.title;
             document.getElementById("bookAuthor").value = book.author;
             document.getElementById("bookIsbn").value = book.isbn;
@@ -176,6 +183,9 @@ function editBook(id) {
 
             document.getElementById("saveButton").innerText = "Update Book";
             document.getElementById("saveButton").onclick = updateBook;
+        })
+        .catch(() => {
+            showMessage("Cannot load book details!", "danger");
         });
 }
 
@@ -198,7 +208,12 @@ function updateBook() {
         },
         body: JSON.stringify(book)
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
             showMessage("Book updated successfully!", "success");
             selectedBookId = null;
@@ -206,6 +221,9 @@ function updateBook() {
             document.getElementById("saveButton").onclick = addBook;
             clearForm();
             loadBooks();
+        })
+        .catch(() => {
+            showMessage("Cannot update book!", "danger");
         });
 }
 
