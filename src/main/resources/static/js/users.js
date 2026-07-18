@@ -119,14 +119,18 @@ function updateUser() {
         return;
     }
 
-    if (password && password.length < 6) {
-        showMessage("Password must be at least 6 characters!", "warning");
-        return;
-    }
-
     let user = {
-        username: username, password: password, fullName: fullName, role: role
+        username: username, fullName: fullName, role: role
     };
+
+    if (password !== "") {
+        if (password.length < 6) {
+            showMessage("Password must be at least 6 characters!", "warning");
+            return;
+        }
+
+        user.password = password;
+    }
 
     fetch("/users/" + selectedUserId, {
         method: "PUT", headers: {
@@ -141,10 +145,13 @@ function updateUser() {
         })
         .then(() => {
             showMessage("User updated successfully!", "success");
+
             selectedUserId = null;
             clearForm();
+
             document.getElementById("saveButton").innerText = "Add User";
             document.getElementById("saveButton").onclick = addUser;
+
             loadUsers();
         })
         .catch(() => {

@@ -24,29 +24,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
+        http.csrf(csrf -> csrf.disable())
 
-                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error/**").permitAll().anyRequest().authenticated())
 
-                .authorizeHttpRequests(auth -> auth
+                .exceptionHandling(exception -> exception.accessDeniedPage("/error/403"))
 
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/403.html", "/404.html", "/500.html", "/error").permitAll()
+                .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/index.html", true).failureUrl("/login?error").permitAll())
 
-                        .anyRequest().authenticated()
-
-                )
-
-                .formLogin(form -> form
-
-                        .loginPage("/login").defaultSuccessUrl("/index.html", true).failureUrl("/login?error").permitAll()
-
-                )
-
-                .logout(logout -> logout
-
-                        .logoutSuccessUrl("/login?logout").permitAll()
-
-                )
+                .logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll())
 
                 .httpBasic(Customizer.withDefaults());
 
