@@ -1,15 +1,25 @@
 loadBooks();
 loadCategories();
 
+let selectedBookId = null;
+
 function loadBooks() {
     fetch("/books")
         .then(response => response.json())
         .then(books => {
-            let tableBody = document.getElementById("bookTableBody");
-            tableBody.innerHTML = "";
+            displayBooks(books);
+        })
+        .catch(() => {
+            showMessage("Cannot load books!", "danger");
+        });
+}
 
-            books.forEach(book => {
-                let row = `
+function displayBooks(books) {
+    let tableBody = document.getElementById("bookTableBody");
+    tableBody.innerHTML = "";
+
+    books.forEach(book => {
+        let row = `
 <tr>
 <td>${book.id}</td>
 <td>${book.title}</td>
@@ -24,11 +34,41 @@ function loadBooks() {
 </td>
 </tr>
 `;
-                tableBody.innerHTML += row;
-            });
+        tableBody.innerHTML += row;
+    });
+}
+
+function searchBooks() {
+    let title = document.getElementById("searchTitle").value.trim();
+    let author = document.getElementById("searchAuthor").value.trim();
+    let categoryId = document.getElementById("searchCategory").value;
+    let available = document.getElementById("searchAvailable").value;
+
+    let url = "/books/search?";
+
+    if (title) {
+        url += "title=" + title + "&";
+    }
+
+    if (author) {
+        url += "author=" + author + "&";
+    }
+
+    if (categoryId) {
+        url += "categoryId=" + categoryId + "&";
+    }
+
+    if (available !== "") {
+        url += "available=" + available;
+    }
+
+    fetch(url)
+        .then(response => response.json())
+        .then(books => {
+            displayBooks(books);
         })
         .catch(() => {
-            showMessage("Cannot load books!", "danger");
+            showMessage("Cannot search books!", "danger");
         });
 }
 
@@ -36,11 +76,15 @@ function loadCategories() {
     fetch("/categories")
         .then(response => response.json())
         .then(categories => {
-            let select = document.getElementById("bookCategory");
-            select.innerHTML = "";
+            let bookCategory = document.getElementById("bookCategory");
+            let searchCategory = document.getElementById("searchCategory");
+
+            bookCategory.innerHTML = "";
+            searchCategory.innerHTML = `<option value="">All Categories</option>`;
 
             categories.forEach(category => {
-                select.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                bookCategory.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                searchCategory.innerHTML += `<option value="${category.id}">${category.name}</option>`;
             });
         })
         .catch(() => {
@@ -89,7 +133,7 @@ function addBook() {
             loadBooks();
         })
         .catch(() => {
-            showMessage("Cannot add book. ISBN may already exist!", "danger");
+            showMessage("Cannot add book!", "danger");
         });
 }
 
@@ -115,19 +159,11 @@ function deleteBook(id) {
         });
 }
 
-let selectedBookId = null;
-
 function editBook(id) {
     fetch("/books/" + id)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error();
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(book => {
             selectedBookId = id;
-
             document.getElementById("bookTitle").value = book.title;
             document.getElementById("bookAuthor").value = book.author;
             document.getElementById("bookIsbn").value = book.isbn;
@@ -140,34 +176,14 @@ function editBook(id) {
 
             document.getElementById("saveButton").innerText = "Update Book";
             document.getElementById("saveButton").onclick = updateBook;
-        })
-        .catch(() => {
-            showMessage("Cannot load book details!", "danger");
         });
 }
 
-function clearForm() {
-    document.getElementById("bookTitle").value = "";
-    document.getElementById("bookAuthor").value = "";
-    document.getElementById("bookIsbn").value = "";
-    document.getElementById("bookYear").value = "";
-    document.getElementById("bookAvailable").checked = true;
-}
-
 function updateBook() {
-    let title = document.getElementById("bookTitle").value.trim();
-    let author = document.getElementById("bookAuthor").value.trim();
-    let isbn = document.getElementById("bookIsbn").value.trim();
-
-    if (!title || !author || !isbn) {
-        showMessage("Please fill all book fields!", "warning");
-        return;
-    }
-
     let book = {
-        title: title,
-        author: author,
-        isbn: isbn,
+        title: document.getElementById("bookTitle").value,
+        author: document.getElementById("bookAuthor").value,
+        isbn: document.getElementById("bookIsbn").value,
         publicationYear: document.getElementById("bookYear").value,
         available: document.getElementById("bookAvailable").checked,
         category: {
@@ -182,12 +198,7 @@ function updateBook() {
         },
         body: JSON.stringify(book)
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error();
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(() => {
             showMessage("Book updated successfully!", "success");
             selectedBookId = null;
@@ -195,8 +206,13 @@ function updateBook() {
             document.getElementById("saveButton").onclick = addBook;
             clearForm();
             loadBooks();
-        })
-        .catch(() => {
-            showMessage("Cannot update book!", "danger");
         });
+}
+
+function clearForm() {
+    document.getElementById("bookTitle").value = "";
+    document.getElementById("bookAuthor").value = "";
+    document.getElementById("bookIsbn").value = "";
+    document.getElementById("bookYear").value = "";
+    document.getElementById("bookAvailable").checked = true;
 }

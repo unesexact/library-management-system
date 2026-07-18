@@ -6,6 +6,7 @@ import com.library.librarymanagement.service.BookService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -33,6 +34,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book updateBook(Long id, Book book) {
+
         Book existingBook = getBookById(id);
 
         existingBook.setTitle(book.getTitle());
@@ -49,5 +51,35 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         Book book = getBookById(id);
         bookRepository.delete(book);
+    }
+
+
+    @Override
+    public List<Book> searchBooks(String title, String author, Long categoryId, Boolean available) {
+
+        List<Book> books = bookRepository.findAll();
+
+
+        if (title != null && !title.isBlank()) {
+            books = books.stream().filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase())).collect(Collectors.toList());
+        }
+
+
+        if (author != null && !author.isBlank()) {
+            books = books.stream().filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase())).collect(Collectors.toList());
+        }
+
+
+        if (categoryId != null) {
+            books = books.stream().filter(book -> book.getCategory().getId().equals(categoryId)).collect(Collectors.toList());
+        }
+
+
+        if (available != null) {
+            books = books.stream().filter(book -> book.getAvailable().equals(available)).collect(Collectors.toList());
+        }
+
+
+        return books;
     }
 }

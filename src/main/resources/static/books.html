@@ -74,6 +74,68 @@
         </div>
     </div>
 
+    <div class="card mt-4">
+
+        <div class="card-body">
+
+            <h3>Search Books</h3>
+
+
+            <input
+                    id="searchTitle"
+                    class="form-control mb-2"
+                    placeholder="Search by title">
+
+
+            <input
+                    id="searchAuthor"
+                    class="form-control mb-2"
+                    placeholder="Search by author">
+
+
+            <select id="searchCategory"
+                    class="form-select mb-2">
+
+                <option value="">
+                    All Categories
+                </option>
+
+            </select>
+
+
+            <select id="searchAvailable"
+                    class="form-select mb-2">
+
+                <option value="">
+                    All Books
+                </option>
+
+                <option value="true">
+                    Available Books
+                </option>
+
+
+                <option value="false">
+                    Borrowed Books
+                </option>
+
+
+            </select>
+
+
+            <button
+                    class="btn btn-primary"
+                    onclick="searchBooks()">
+
+                Search
+
+            </button>
+
+
+        </div>
+
+    </div>
+
     <table class="table table-striped mt-4">
         <thead>
         <tr>
