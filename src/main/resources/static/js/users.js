@@ -24,29 +24,50 @@ function loadUsers() {
 `;
                 tableBody.innerHTML += row;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load users!", "danger");
         });
 }
 
 function addUser() {
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let fullName = document.getElementById("fullName").value.trim();
+    let role = document.getElementById("role").value;
+
+    if (!username || !password || !fullName) {
+        showMessage("Please fill all user fields!", "warning");
+        return;
+    }
+
+    if (password.length < 6) {
+        showMessage("Password must be at least 6 characters!", "warning");
+        return;
+    }
+
     let user = {
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value,
-        fullName: document.getElementById("fullName").value,
-        role: document.getElementById("role").value
+        username: username, password: password, fullName: fullName, role: role
     };
 
     fetch("/users", {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
+        }, body: JSON.stringify(user)
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("User added!");
+            showMessage("User added successfully!", "success");
             clearForm();
             loadUsers();
+        })
+        .catch(() => {
+            showMessage("Cannot add user. Username may already exist!", "danger");
         });
 }
 
@@ -58,9 +79,17 @@ function deleteUser(id) {
     fetch("/users/" + id, {
         method: "DELETE"
     })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+        })
         .then(() => {
-            alert("User deleted!");
+            showMessage("User deleted successfully!", "success");
             loadUsers();
+        })
+        .catch(() => {
+            showMessage("Cannot delete user!", "danger");
         });
 }
 
@@ -70,7 +99,8 @@ function editUser(id) {
         .then(user => {
             selectedUserId = id;
             document.getElementById("username").value = user.username;
-            document.getElementById("password").value = user.password;
+            // Do not show password
+            document.getElementById("password").value = "";
             document.getElementById("fullName").value = user.fullName;
             document.getElementById("role").value = user.role;
             document.getElementById("saveButton").innerText = "Update User";
@@ -79,28 +109,46 @@ function editUser(id) {
 }
 
 function updateUser() {
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let fullName = document.getElementById("fullName").value.trim();
+    let role = document.getElementById("role").value;
+
+    if (!username || !fullName) {
+        showMessage("Username and full name are required!", "warning");
+        return;
+    }
+
+    if (password && password.length < 6) {
+        showMessage("Password must be at least 6 characters!", "warning");
+        return;
+    }
+
     let user = {
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value,
-        fullName: document.getElementById("fullName").value,
-        role: document.getElementById("role").value
+        username: username, password: password, fullName: fullName, role: role
     };
 
     fetch("/users/" + selectedUserId, {
-        method: "PUT",
-        headers: {
+        method: "PUT", headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
+        }, body: JSON.stringify(user)
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("User updated!");
+            showMessage("User updated successfully!", "success");
             selectedUserId = null;
             clearForm();
             document.getElementById("saveButton").innerText = "Add User";
             document.getElementById("saveButton").onclick = addUser;
             loadUsers();
+        })
+        .catch(() => {
+            showMessage("Cannot update user!", "danger");
         });
 }
 

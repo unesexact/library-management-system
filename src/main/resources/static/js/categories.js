@@ -12,21 +12,29 @@ function loadCategories() {
 <tr>
 <td>${category.id}</td>
 <td>${category.name}</td>
-<td>${category.description}</td>
+<td>${category.description ?? ""}</td>
 <td>
-<button class="btn btn-warning btn-sm me-2" onclick="editCategory(${category.id}, '${category.name}', '${category.description}')">Edit</button>
+<button class="btn btn-warning btn-sm me-2" onclick="editCategory(${category.id}, '${category.name}', '${category.description ?? ""}')">Edit</button>
 <button class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id})">Delete</button>
 </td>
 </tr>
 `;
                 tableBody.innerHTML += row;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load categories!", "danger");
         });
 }
 
 function addCategory() {
-    let name = document.getElementById("categoryName").value;
-    let description = document.getElementById("categoryDescription").value;
+    let name = document.getElementById("categoryName").value.trim();
+    let description = document.getElementById("categoryDescription").value.trim();
+
+    if (!name) {
+        showMessage("Category name is required!", "warning");
+        return;
+    }
 
     fetch("/categories", {
         method: "POST",
@@ -38,10 +46,19 @@ function addCategory() {
             description: description
         })
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("Category added!");
+            showMessage("Category added successfully!", "success");
+            clearCategoryForm();
             loadCategories();
+        })
+        .catch(() => {
+            showMessage("Cannot add category!", "danger");
         });
 }
 
@@ -53,9 +70,17 @@ function deleteCategory(id) {
     fetch("/categories/" + id, {
         method: "DELETE"
     })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+        })
         .then(() => {
-            alert("Category deleted!");
+            showMessage("Category deleted successfully!", "success");
             loadCategories();
+        })
+        .catch(() => {
+            showMessage("Cannot delete category!", "danger");
         });
 }
 
@@ -70,8 +95,13 @@ function editCategory(id, name, description) {
 }
 
 function updateCategory() {
-    let name = document.getElementById("categoryName").value;
-    let description = document.getElementById("categoryDescription").value;
+    let name = document.getElementById("categoryName").value.trim();
+    let description = document.getElementById("categoryDescription").value.trim();
+
+    if (!name) {
+        showMessage("Category name is required!", "warning");
+        return;
+    }
 
     fetch("/categories/" + selectedCategoryId, {
         method: "PUT",
@@ -83,14 +113,26 @@ function updateCategory() {
             description: description
         })
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("Category updated!");
+            showMessage("Category updated successfully!", "success");
             selectedCategoryId = null;
             document.getElementById("saveButton").innerText = "Add Category";
             document.getElementById("saveButton").onclick = addCategory;
-            document.getElementById("categoryName").value = "";
-            document.getElementById("categoryDescription").value = "";
+            clearCategoryForm();
             loadCategories();
+        })
+        .catch(() => {
+            showMessage("Cannot update category!", "danger");
         });
+}
+
+function clearCategoryForm() {
+    document.getElementById("categoryName").value = "";
+    document.getElementById("categoryDescription").value = "";
 }

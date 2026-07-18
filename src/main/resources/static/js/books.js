@@ -26,6 +26,9 @@ function loadBooks() {
 `;
                 tableBody.innerHTML += row;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load books!", "danger");
         });
 }
 
@@ -39,18 +42,31 @@ function loadCategories() {
             categories.forEach(category => {
                 select.innerHTML += `<option value="${category.id}">${category.name}</option>`;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load categories!", "danger");
         });
 }
 
 function addBook() {
+    let title = document.getElementById("bookTitle").value.trim();
+    let author = document.getElementById("bookAuthor").value.trim();
+    let isbn = document.getElementById("bookIsbn").value.trim();
+    let category = document.getElementById("bookCategory").value;
+
+    if (!title || !author || !isbn || !category) {
+        showMessage("Please fill all book fields!", "warning");
+        return;
+    }
+
     let book = {
-        title: document.getElementById("bookTitle").value,
-        author: document.getElementById("bookAuthor").value,
-        isbn: document.getElementById("bookIsbn").value,
+        title: title,
+        author: author,
+        isbn: isbn,
         publicationYear: document.getElementById("bookYear").value,
         available: document.getElementById("bookAvailable").checked,
         category: {
-            id: document.getElementById("bookCategory").value
+            id: category
         }
     };
 
@@ -61,11 +77,19 @@ function addBook() {
         },
         body: JSON.stringify(book)
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("Book added!");
+            showMessage("Book added successfully!", "success");
             clearForm();
             loadBooks();
+        })
+        .catch(() => {
+            showMessage("Cannot add book. ISBN may already exist!", "danger");
         });
 }
 
@@ -77,9 +101,17 @@ function deleteBook(id) {
     fetch("/books/" + id, {
         method: "DELETE"
     })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+        })
         .then(() => {
-            alert("Book deleted!");
+            showMessage("Book deleted successfully!", "success");
             loadBooks();
+        })
+        .catch(() => {
+            showMessage("Cannot delete book!", "danger");
         });
 }
 
@@ -87,17 +119,30 @@ let selectedBookId = null;
 
 function editBook(id) {
     fetch("/books/" + id)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(book => {
             selectedBookId = id;
+
             document.getElementById("bookTitle").value = book.title;
             document.getElementById("bookAuthor").value = book.author;
             document.getElementById("bookIsbn").value = book.isbn;
-            document.getElementById("bookYear").value = book.publicationYear;
+            document.getElementById("bookYear").value = book.publicationYear ?? "";
             document.getElementById("bookAvailable").checked = book.available;
-            document.getElementById("bookCategory").value = book.category.id;
+
+            if (book.category) {
+                document.getElementById("bookCategory").value = book.category.id;
+            }
+
             document.getElementById("saveButton").innerText = "Update Book";
             document.getElementById("saveButton").onclick = updateBook;
+        })
+        .catch(() => {
+            showMessage("Cannot load book details!", "danger");
         });
 }
 
@@ -106,13 +151,23 @@ function clearForm() {
     document.getElementById("bookAuthor").value = "";
     document.getElementById("bookIsbn").value = "";
     document.getElementById("bookYear").value = "";
+    document.getElementById("bookAvailable").checked = true;
 }
 
 function updateBook() {
+    let title = document.getElementById("bookTitle").value.trim();
+    let author = document.getElementById("bookAuthor").value.trim();
+    let isbn = document.getElementById("bookIsbn").value.trim();
+
+    if (!title || !author || !isbn) {
+        showMessage("Please fill all book fields!", "warning");
+        return;
+    }
+
     let book = {
-        title: document.getElementById("bookTitle").value,
-        author: document.getElementById("bookAuthor").value,
-        isbn: document.getElementById("bookIsbn").value,
+        title: title,
+        author: author,
+        isbn: isbn,
         publicationYear: document.getElementById("bookYear").value,
         available: document.getElementById("bookAvailable").checked,
         category: {
@@ -127,13 +182,21 @@ function updateBook() {
         },
         body: JSON.stringify(book)
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("Book updated!");
+            showMessage("Book updated successfully!", "success");
             selectedBookId = null;
             document.getElementById("saveButton").innerText = "Add Book";
             document.getElementById("saveButton").onclick = addBook;
             clearForm();
             loadBooks();
+        })
+        .catch(() => {
+            showMessage("Cannot update book!", "danger");
         });
 }

@@ -8,6 +8,7 @@ import com.library.librarymanagement.repository.BorrowRepository;
 import com.library.librarymanagement.repository.UserRepository;
 import com.library.librarymanagement.service.BorrowService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -52,12 +53,14 @@ public class BorrowServiceImpl implements BorrowService {
         return borrowRepository.save(existingBorrow);
     }
 
+    @Transactional
     @Override
     public void deleteBorrow(Long id) {
         Borrow borrow = getBorrowById(id);
         borrowRepository.delete(borrow);
     }
 
+    @Transactional
     @Override
     public Borrow borrowBook(Long userId, Long bookId) {
         User user = userRepository.findById(userId)
@@ -66,7 +69,7 @@ public class BorrowServiceImpl implements BorrowService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        if (!book.getAvailable()) {
+        if (Boolean.FALSE.equals(book.getAvailable())) {
             throw new RuntimeException("Book is already borrowed");
         }
 
@@ -84,6 +87,7 @@ public class BorrowServiceImpl implements BorrowService {
         return borrowRepository.save(borrow);
     }
 
+    @Transactional
     @Override
     public Borrow returnBook(Long borrowId) {
         Borrow borrow = getBorrowById(borrowId);

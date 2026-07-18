@@ -2,6 +2,7 @@ package com.library.librarymanagement.controller;
 
 import com.library.librarymanagement.entity.Borrow;
 import com.library.librarymanagement.service.BorrowService;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class BorrowController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Borrow createBorrow(@RequestBody Borrow borrow) {
+    public Borrow createBorrow(@Valid @RequestBody Borrow borrow) {
         return borrowService.createBorrow(borrow);
     }
 
@@ -41,7 +42,7 @@ public class BorrowController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Borrow updateBorrow(@PathVariable Long id, @RequestBody Borrow borrow) {
+    public Borrow updateBorrow(@PathVariable Long id, @Valid @RequestBody Borrow borrow) {
         return borrowService.updateBorrow(id, borrow);
     }
 

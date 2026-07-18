@@ -1,6 +1,7 @@
 package com.library.librarymanagement.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,9 +19,11 @@ public class Borrow {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Borrow date is required")
     @Column(nullable = false)
     private LocalDate borrowDate;
 
+    @NotNull(message = "Due date is required")
     @Column(nullable = false)
     private LocalDate dueDate;
 
@@ -29,10 +32,12 @@ public class Borrow {
     @Column(nullable = false)
     private Boolean returned = false;
 
+    @NotNull(message = "User is required")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotNull(message = "Book is required")
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;

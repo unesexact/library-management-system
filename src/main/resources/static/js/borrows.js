@@ -8,11 +8,17 @@ fetch("/users/me")
         if (currentRole === "ADMIN") {
             loadUsers();
         } else {
-            document.querySelector(".admin-only").style.display = "none";
+            let adminBox = document.querySelector(".admin-only");
+            if (adminBox) {
+                adminBox.style.display = "none";
+            }
         }
 
         loadBooks();
         loadBorrows();
+    })
+    .catch(() => {
+        showMessage("Cannot load user information!", "danger");
     });
 
 function loadUsers() {
@@ -25,6 +31,9 @@ function loadUsers() {
             users.forEach(user => {
                 select.innerHTML += `<option value="${user.id}">${user.fullName}</option>`;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load users!", "danger");
         });
 }
 
@@ -35,10 +44,19 @@ function loadBooks() {
             let select = document.getElementById("borrowBook");
             select.innerHTML = "";
 
-            books.forEach(book => {
-                let status = book.available ? "" : " (Unavailable)";
-                select.innerHTML += `<option value="${book.id}">${book.title}${status}</option>`;
+            let availableBooks = books.filter(book => book.available);
+
+            if (availableBooks.length === 0) {
+                select.innerHTML = `<option value="">No available books</option>`;
+                return;
+            }
+
+            availableBooks.forEach(book => {
+                select.innerHTML += `<option value="${book.id}">${book.title}</option>`;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load books!", "danger");
         });
 }
 
@@ -71,12 +89,20 @@ function loadBorrows() {
 <td>${action}</td>
 </tr>`;
             });
+        })
+        .catch(() => {
+            showMessage("Cannot load borrows!", "danger");
         });
 }
 
 function borrowBook() {
     let userId = document.getElementById("borrowUser").value;
     let bookId = document.getElementById("borrowBook").value;
+
+    if (!userId || !bookId) {
+        showMessage("Please select user and book!", "warning");
+        return;
+    }
 
     fetch(`/borrows/${userId}/${bookId}`, {
         method: "POST"
@@ -88,9 +114,12 @@ function borrowBook() {
             return response.json();
         })
         .then(() => {
-            alert("Book borrowed!");
+            showMessage("Book borrowed successfully!", "success");
             loadBooks();
             loadBorrows();
+        })
+        .catch(() => {
+            showMessage("Cannot borrow this book!", "danger");
         });
 }
 
@@ -98,11 +127,19 @@ function returnBook(id) {
     fetch(`/borrows/${id}/return`, {
         method: "PUT"
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
         .then(() => {
-            alert("Book returned!");
+            showMessage("Book returned successfully!", "success");
             loadBooks();
             loadBorrows();
+        })
+        .catch(() => {
+            showMessage("Cannot return book!", "danger");
         });
 }
 
@@ -114,8 +151,17 @@ function deleteBorrow(id) {
     fetch(`/borrows/${id}`, {
         method: "DELETE"
     })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error();
+            }
+        })
         .then(() => {
-            alert("Borrow deleted!");
+            showMessage("Borrow deleted successfully!", "success");
+            loadBooks();
             loadBorrows();
+        })
+        .catch(() => {
+            showMessage("Cannot delete borrow!", "danger");
         });
 }

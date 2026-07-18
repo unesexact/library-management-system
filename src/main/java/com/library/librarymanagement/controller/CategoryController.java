@@ -2,6 +2,7 @@ package com.library.librarymanagement.controller;
 
 import com.library.librarymanagement.entity.Category;
 import com.library.librarymanagement.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,13 +30,13 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Category createCategory(@RequestBody Category category) {
+    public Category createCategory(@Valid @RequestBody Category category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
+    public Category updateCategory(@PathVariable Long id, @Valid @RequestBody Category category) {
         return categoryService.updateCategory(id, category);
     }
 
